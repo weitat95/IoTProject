@@ -1,12 +1,10 @@
-// 1) main.c
-// 2) Corentin Dugue & Wei Tat Lee
-// 3) 24/10/2016
-// 4) Main function of our IOT system
-// 5) Lab 8
-// 6) MAHESH SRINIVASAN
-// 7) 31/10/2016
-// 8) Hardware connections
-// See SCH file
+// Name: new_MAIN.c
+// Authors: Corentin Dugue & Wei Tat Lee
+// Creation: 10/24/2016
+// Description: Main function of our IOT system
+// Last modified: 10/24/2016
+
+/*************************START*************************/
 
 #include <stdint.h>
 #include "PLL.h"
@@ -19,6 +17,14 @@
 #include "esp8266.h"
 #include "GasSensor.h"
 #include "TouchSensor.h"
+#include "Colors.h"
+
+/*
+struct RGB LED_BOTH={SKY_BLUE};
+struct RGB LED_WIFI={SKY_BLUE};
+struct RGB LED_BT={SKY_BLUE};
+struct RGB LED_NO={SKY_BLUE};
+*/
 
 // Functions declaration
 void DisableInterrupts(void); // Disable interrupts
@@ -33,25 +39,9 @@ void WaitForInterrupt(void);  // low power mode
 // Constant
 #define GAS_THRESHOLD 1000
 #define TEMP_THRESHOLD 750
-#define TEMP1 735 
+#define TEMP1 735
 #define TEMP2 745
 #define PERIOD  400000000 // 5 sec
-  
-// Colors declaration
-//#define BURNT_ORANGE 222,122,34 
-#define BURNT_ORANGE 128,0,128 
-
-
-#define GLACIER_BLUE 25,149,173
-#define RED 198, 0, 0
-#define WHILE_LOW 20, 20, 20
-#define SKY_BLUE 0, 191, 255
-#define CADET_BLUE 0, 68, 69
-
-#define SPRING_GREEN 137,218,89
-#define FOREST_GREEN 46,70,0
-
-#define SPICES 233,79,8
 
 // Variables declaration
 uint32_t temperature=0;
@@ -63,6 +53,15 @@ uint32_t brightness=0;
 uint32_t gas=0;
 uint32_t lightPercentage=0;
 float gasi=0;
+uint32_t WIFI_ON=0;
+uint32_t BLUETOOTH_ON=0;
+
+/*
+uint8_t LED_R=0;
+uint8_t LED_G=0;
+uint8_t LED_B=0;
+*/
+
 
 // Debugging
 uint32_t START=0;
@@ -91,7 +90,7 @@ void Timer0A_Init(void){
 // Periodic timer handler
 void Timer0A_Handler(void){
   TIMER0_ICR_R = TIMER_ICR_TATOCINT;    // acknowledge timer0A timeout
-  //AllColor(WHILE_LOW, 1);
+  //AllColor(WHITE_LOW, 1);
   temperature=1400-(uint32_t)ReadTemperature();
   light = ADC0_InSeq3();
   gas=ADC1_InSeq3();
@@ -106,7 +105,7 @@ void GPIOPortE_Handler(void){
   if(GPIO_PORTE_RIS_R&0x01){
     GPIO_PORTE_ICR_R=0x01;
     Touch ^= 1;
-    //AllColor(WHILE_LOW, 1);
+    //AllColor(WHITE_LOW, 1);
     // Do functions to get temperature and log on server
     temperature=1400-(uint32_t)ReadTemperature();
     light = ADC0_InSeq3();
@@ -130,9 +129,21 @@ int main(void){
 
   while(1){
   lightPercentage=(light*100)/4095;
-  brightness = GetBrightness(lightPercentage);      
+  brightness = GetBrightness(lightPercentage);
   //gasi=MQGetGasPercentage(gas,3);
-       
+
+
+
+  /*
+    // LED_Status
+  if (WIFI_ON==1) {
+    if (BLUETOOTH_ON==1) { LED_R=0; LED_G=191; LED_B=255; } // WIFI & BT
+    else { LED_R=137; LED_G=218; LED_B=89; } } // ONLY WIFI
+  else if (BLUETOOTH_ON==1) { LED_R=0; LED_G=255; LED_B=255; } // Only BT
+  else { LED_R=20; LED_G=20; LED_B=20; } // NO CONNECTION (but power)
+  */
+
+  // Capacitive Wifi
   if((touch_wifi==1)&&(periodic_wifi==0)){
     if (uploading==0) {Loading(GLACIER_BLUE, brightness, 7);}
     uploading=1;
@@ -141,16 +152,17 @@ int main(void){
     uploading=0;
     touch_wifi=0;
   }
-  
+
+  // Periodic Wifi
   if((touch_wifi==0)&&(periodic_wifi==1)){
     TIMER0_CTL_R &= ~TIMER_CTL_TAEN; // disable timer0A during setup
     Loading(BURNT_ORANGE, brightness, 7);
-    AllColor(BURNT_ORANGE, brightness); 
+    AllColor(BURNT_ORANGE, brightness);
     logOwnServer(lightPercentage, temperature, gas);
     periodic_wifi=0;
     Timer0A_Init();
   }
-  
+
   if (gas>=GAS_THRESHOLD) {
     AllColor(RED, brightness);
   }
@@ -160,16 +172,15 @@ int main(void){
   else if (temperature<TEMP2) {
     Blinking_Color1_Color2(SPRING_GREEN, FOREST_GREEN, brightness);
   }
-  else if (temperature<TEMP_THRESHOLD) { 
+  else if (temperature<TEMP_THRESHOLD) {
     Blinking_Color1_Color2(SPICES, RED, brightness);
   }
-  
   else {
     AllColor(RED, brightness);
   }
-  
+
   SysTick_Wait10ms(50);
-  
+
   } // end while
-  
+
 } // end main

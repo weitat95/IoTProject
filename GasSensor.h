@@ -1,15 +1,15 @@
-// 1) GasSensor.h
-// 2) Corentin Dugue & Wei Tat Lee
-// 3) 10/24/2016
-// 4) Provide functions to interface with the gas sensor
-// 5) Lab 8
-// 6) MAHESH SRINIVASAN
-// 7) 10/24/2016
-// 8) Hardware connections
+// Name: GasSensor.h
+// Authors: Corentin Dugue & Wei Tat Lee
+// Creation: 10/24/2016
+// Description: Provide functions that interact with the gas sensor
+// Last modified: 10/24/2016
+// Hardware connections:
 //     Gas Sensor
 // #1  Power: 5V DC
 //     Data out: PE3 (ADC)
 //     Ground: GND
+
+/*************************START*************************/
 
 #include <stdint.h>
 #include <stdio.h>

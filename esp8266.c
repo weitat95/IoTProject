@@ -3,9 +3,9 @@
 // - Initializes an ESP8266 module to act as a WiFi client
 //   and fetch weather data from openweathermap.org
 //
-/* 
+/*
   Author: Steven Prickett (steven.prickett@gmail.com)
- 
+
   THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
   OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
   MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
@@ -31,8 +31,8 @@
  | Ant                    2   7 |
  | enna       processor   3   6 |
  |                        4   5 |
- \------------------------------/ 
-ESP8266    TM4C123 
+ \------------------------------/
+ESP8266    TM4C123
   1 URxD    PB1   UART out of TM4C123, 115200 baud
   2 GPIO0         +3.3V for normal operation (ground to flash)
   3 GPIO2         +3.3V
@@ -60,17 +60,7 @@ ESP8266    TM4C123
 
 // Access point parameters
 #define SSID_NAME  "AndroidHotspot5195"
-//#define SSID_NAME  "bruh"
 #define PASSKEY    "cocococo"
-//#define PASSKEY    "445Lisfun"
-//#define SSID_NAME  "weitat"
-//#define PASSKEY "weitat95"
-//#define SSID_NAME  "PC-coco2410"
-//#define PASSKEY    "cocococo"
-//#define SSID_NAME "Edinbros"
-//#define PASSKEY "minecraft2114"
-
-
 
 //#define SEC_TYPE   ESP8266_ENCRYPT_MODE_WPA2_PSK
 
@@ -112,7 +102,7 @@ uint32_t ServerResponseIndex = 0;
 
 volatile bool ESP8266_ProcessBuffer = false;
 volatile bool ESP8266_EchoResponse = false;
-volatile bool ESP8266_ResponseComplete = false;    
+volatile bool ESP8266_ResponseComplete = false;
 volatile bool ESP8266_APEnabled = false;
 volatile bool ESP8266_ClientEnabled = false;
 volatile bool ESP8266_ServerEnabled = false;
@@ -152,8 +142,8 @@ void SearchCheck(char letter){
       SearchIndex++;
       if(SearchString[SearchIndex] == 0){ // match string?
         SearchFound = true;
-        SearchLooking = false;  
-      }        
+        SearchLooking = false;
+      }
     }else{
       SearchIndex = 0; // start over
     }
@@ -186,10 +176,10 @@ void ServerResponseSearchCheck(char letter){
     if(ServerResponseSearchString[ServerResponseSearchIndex] == lc(letter)){ // match letter?
       ServerResponseSearchIndex++;
       if(ServerResponseSearchString[ServerResponseSearchIndex] == 0){ // match string?
-        ServerResponseSearchLooking = 2; 
-        strcpy(ServerResponseSearchString,"\r\nok\r\n"); 
-        ServerResponseSearchIndex = 0;        
-      }        
+        ServerResponseSearchLooking = 2;
+        strcpy(ServerResponseSearchString,"\r\nok\r\n");
+        ServerResponseSearchIndex = 0;
+      }
     }else{
       ServerResponseSearchIndex = 0; // start over
     }
@@ -202,8 +192,8 @@ void ServerResponseSearchCheck(char letter){
       ServerResponseSearchIndex++;
       if(ServerResponseSearchString[ServerResponseSearchIndex] == 0){   // match OK string?
         ServerResponseSearchFinished = 1;
-        ServerResponseSearchLooking = 0;    
-      }        
+        ServerResponseSearchLooking = 0;
+      }
     }else{
       ServerResponseSearchIndex = 0; // start over
     }
@@ -226,15 +216,15 @@ void ESP8266_InitUART(uint32_t baud, int echo){ volatile int delay;
   SYSCTL_RCGCUART_R |= 0x02; // Enable UART1
   while((SYSCTL_PRUART_R&0x02)==0){};
   SYSCTL_RCGCGPIO_R |= 0x02; // Enable PORT B clock gating
-  while((SYSCTL_PRGPIO_R&0x02)==0){}; 
+  while((SYSCTL_PRGPIO_R&0x02)==0){};
   GPIO_PORTB_AFSEL_R |= 0x03;
   GPIO_PORTB_DIR_R |= 0x20; // PB5 output to reset
   GPIO_PORTB_PCTL_R =(GPIO_PORTB_PCTL_R&0xFF0FFF00)|0x00000011;
-  GPIO_PORTB_DEN_R   |= 0x23; //23 
+  GPIO_PORTB_DEN_R   |= 0x23; //23
   GPIO_PORTB_DATA_R |= 0x20; // reset high
   UART1_CTL_R &= ~UART_CTL_UARTEN;                  // Clear UART1 enable bit during config
-  UART1_IBRD_R = 5000000/baud;   
-  UART1_FBRD_R = ((64*(5000000%baud))+baud/2)/baud;      
+  UART1_IBRD_R = 5000000/baud;
+  UART1_FBRD_R = ((64*(5000000%baud))+baud/2)/baud;
    // UART1_IBRD_R = 43;       // IBRD = int(80,000,000 / (16 * 115,200)) = int(43.403)
    // UART1_FBRD_R = 26;       // FBRD = round(0.4028 * 64 ) = 26
 
@@ -242,7 +232,7 @@ void ESP8266_InitUART(uint32_t baud, int echo){ volatile int delay;
   UART1_IFLS_R &= ~0x3F;                            // Clear TX and RX interrupt FIFO level fields
   UART1_IFLS_R += UART_IFLS_RX1_8 ;                 // RX FIFO interrupt threshold >= 1/8th full
   UART1_IM_R  |= UART_IM_RXIM | UART_IM_RTIM;       // Enable interupt on RX and RX transmission end
-  UART1_CTL_R |= UART_CTL_UARTEN;                   // Set UART1 enable bit    
+  UART1_CTL_R |= UART_CTL_UARTEN;                   // Set UART1 enable bit
 }
 // -----------UART1_Handler-----------
 // called on one receiver data input followed by timeout
@@ -270,7 +260,7 @@ void ESP8266_EnableRXInterrupt(void){
 // Inputs: none
 // Outputs: none
 void ESP8266_DisableRXInterrupt(void){
-  NVIC_DIS0_R = 1<<6; // interrupt 6    
+  NVIC_DIS0_R = 1<<6; // interrupt 6
 }
 
 //--------ESP8266_PrintChar--------
@@ -300,13 +290,13 @@ void ESP8266FIFOtoBuffer(void){
       RXBufferIndex = 0; // store last BUFFER_SIZE received
     }
     RXBuffer[RXBufferIndex] = letter; // put char into buffer
-    RXBufferIndex++; // increment buffer index 
+    RXBufferIndex++; // increment buffer index
     SearchCheck(letter);               // check for end of command
     ServerResponseSearchCheck(letter); // check for server response
     if(letter == '\n'){
       LastReturnIndex = CurrentReturnIndex;
       CurrentReturnIndex = RXBufferIndex;
-    }    
+    }
   }
 }
 
@@ -370,38 +360,38 @@ void ESP8266_Init(uint32_t baud){
   printf("ESP8266 Initialization:\n\r");
   ESP8266_EchoResponse = true; // debugging
   AllColor(50, 50, 0, 1);
-  if(ESP8266_Reset()==0){ 
+  if(ESP8266_Reset()==0){
     printf("Reset failure, could not reset\n\r"); while(1){};
   }
 //  ESP8266SendCommand("AT+UART_CUR=115200,8,1,0,0\r\n");
 //  UART_InChar();
 
 //  ESP8266_InitUART(115200,true);
-  
+
 // step 2: AT+CWMODE=1 set wifi mode to client (not an access point)
-//  if(ESP8266_SetWifiMode(ESP8266_WIFI_MODE_CLIENT)==0){ 
+//  if(ESP8266_SetWifiMode(ESP8266_WIFI_MODE_CLIENT)==0){
 //  printf("SetWifiMode, could not set mode\n\r"); while(1){};
 // }
-// step 3: AT+CWJAP="ValvanoAP","12345678"  connect to access point 
+// step 3: AT+CWJAP="ValvanoAP","12345678"  connect to access point
   AllColor(0, 50, 50, 1);
-  if(ESP8266_JoinAccessPoint(SSID_NAME,PASSKEY)==0){ 
+  if(ESP8266_JoinAccessPoint(SSID_NAME,PASSKEY)==0){
     printf("JoinAccessPoint error, could not join AP\n\r"); while(1){};
   }
 // optional step: AT+CIFSR check to see our IP address
   AllColor(20, 50, 20, 1);
   if(ESP8266_GetIPAddress()==0){ // data streamed to UART0, OK
     printf("GetIPAddress error, could not get IP address\n\r"); while(1){};
-  } 
-//// optional step: AT+CIPMUX==0 set mode to single socket 
+  }
+//// optional step: AT+CIPMUX==0 set mode to single socket
 //  if(ESP8266_SetConnectionMux(0)==0){ // single socket
 //    printf("SetConnectionMux error, could not set connection mux\n\r"); while(1){};
-//  } 
+//  }
 // optional step: AT+CWLAP check to see other AP in area
-  if(ESP8266_ListAccessPoints()==0){ 
+  if(ESP8266_ListAccessPoints()==0){
     printf("ListAccessPoints, could not list access points\n\r"); while(1){};
   }
 // step 4: AT+CIPMODE=0 set mode to not data mode
-  if(ESP8266_SetDataTransmissionMode(0)==0){ 
+  if(ESP8266_SetDataTransmissionMode(0)==0){
     printf("SetDataTransmissionMode, could not make connection\n\r"); while(1){};
   }
   ESP8266_InputProcessingEnabled = false; // not a server
@@ -429,7 +419,7 @@ int ESP8266_Reset(){int try=MAXTRY;
 // configures the esp8266 to operate as a wifi client, access point, or both
 // since it searches for "no change" it will execute twice when changing modes
 // Input: mode accepts ESP8266_WIFI_MODE constants
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_SetWifiMode(uint8_t mode){
   int try=MAXTRY;
   if(mode > ESP8266_WIFI_MODE_AP_AND_CLIENT)return 0; // fail
@@ -443,11 +433,11 @@ int ESP8266_SetWifiMode(uint8_t mode){
   }
   return 0; // fail
 }
- 
+
 //---------ESP8266_SetConnectionMux----------
 // enables the esp8266 connection mux, required for starting tcp server
 // Input: 0 (single) or 1 (multiple)
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_SetConnectionMux(uint8_t enabled){
   int try=MAXTRY;
   SearchStart("ok");
@@ -481,7 +471,7 @@ int ESP8266_JoinAccessPoint(const char* ssid, const char* password){
 //---------ESP8266_ListAccessPoints----------
 // lists available wifi access points
 // Input: none
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_ListAccessPoints(void){
   int try=MAXTRY;
   SearchStart("ok");
@@ -497,7 +487,7 @@ int ESP8266_ListAccessPoints(void){
 // ----------ESP8266_QuitAccessPoint-------------
 // - disconnects from currently connected wifi access point
 // Inputs: none
-// Outputs: 1 if success, 0 if fail 
+// Outputs: 1 if success, 0 if fail
 int ESP8266_QuitAccessPoint(void){
   int try=MAXTRY;
   SearchStart("ok");
@@ -531,12 +521,12 @@ int ESP8266_ConfigureAccessPoint(const char* ssid, const char* password, uint8_t
 //---------ESP8266_GetIPAddress----------
 // Get local IP address
 // Input: none
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_GetIPAddress(void){
   int try=MAXTRY;
   SearchStart("ok");
   while(try){
-    ESP8266SendCommand("AT+CIFSR\r\n");   
+    ESP8266SendCommand("AT+CIFSR\r\n");
     DelayMsSearching(5000);
     if(SearchFound) return 1; // success
     try--;
@@ -545,9 +535,9 @@ int ESP8266_GetIPAddress(void){
 }
 
 //---------ESP8266_MakeTCPConnection----------
-// Establish TCP connection 
+// Establish TCP connection
 // Input: IP address or web page as a string
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_MakeTCPConnection(char *IPaddress){
   int try=MAXTRY;
   SearchStart("ok");
@@ -562,13 +552,13 @@ int ESP8266_MakeTCPConnection(char *IPaddress){
 }
 
 //---------ESP8266_SendTCP----------
-// Send a TCP packet to server 
+// Send a TCP packet to server
 // Input: TCP payload to send
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_SendTCP(char* fetch){
   volatile uint32_t time,n;
   sprintf((char*)TXBuffer, "AT+CIPSEND=%d\r\n", strlen(fetch));
-  ESP8266SendCommand(TXBuffer);  
+  ESP8266SendCommand(TXBuffer);
   DelayMs(50);
   ESP8266SendCommand(fetch);
   ServerResponseSearchStart();
@@ -585,14 +575,14 @@ int ESP8266_SendTCP(char* fetch){
 }
 
 //---------ESP8266_CloseTCPConnection----------
-// Close TCP connection 
+// Close TCP connection
 // Input: none
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_CloseTCPConnection(void){
   int try=1;
   SearchStart("ok");
   while(try){
-    ESP8266SendCommand("AT+CIPCLOSE\r\n");   
+    ESP8266SendCommand("AT+CIPCLOSE\r\n");
     DelayMsSearching(4000);
     if(SearchFound) return 1; // success
     try--;
@@ -601,8 +591,8 @@ int ESP8266_CloseTCPConnection(void){
 }
 //---------ESP8266_SetDataTransmissionMode----------
 // set data transmission mode
-// Input: 0 not data mode, 1 data mode; return "Link is builded" 
-// output: 1 if success, 0 if fail 
+// Input: 0 not data mode, 1 data mode; return "Link is builded"
+// output: 1 if success, 0 if fail
 int ESP8266_SetDataTransmissionMode(uint8_t mode){
   int try=MAXTRY;
   SearchStart("ok");
@@ -619,7 +609,7 @@ int ESP8266_SetDataTransmissionMode(uint8_t mode){
 //---------ESP8266_GetStatus----------
 // get status
 // Input: none
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_GetStatus(void){
   int try=MAXTRY;
   SearchStart("ok");
@@ -635,7 +625,7 @@ int ESP8266_GetStatus(void){
 //---------ESP8266_GetVersionNumber----------
 // get status
 // Input: none
-// output: 1 if success, 0 if fail 
+// output: 1 if success, 0 if fail
 int ESP8266_GetVersionNumber(void){
   int try=MAXTRY;
   SearchStart("ok");
@@ -657,14 +647,14 @@ int ESP8266_GetVersionNumber(void){
 //   microcontroller. The message will then be relayed back
 //   over the USB UART.
 //
-//*********************************************************  
-/* 
-  This work is copyright Steven Prickett (steven.prickett@gmail.com) and 
-  licensed under a Creative Commons Attribution 3.0 Unported License, 
+//*********************************************************
+/*
+  This work is copyright Steven Prickett (steven.prickett@gmail.com) and
+  licensed under a Creative Commons Attribution 3.0 Unported License,
   available at:
-  
+
   https://creativecommons.org/licenses/by/3.0/
- 
+
   THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
   OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
   MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
@@ -672,7 +662,7 @@ int ESP8266_GetVersionNumber(void){
   OR CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
 */
 uint16_t ESP8266_ServerPort = 80;
-uint16_t ESP8266_ServerTimeout = 28800; 
+uint16_t ESP8266_ServerTimeout = 28800;
 // defines the form served by the http server
 
 // ----------ESP8266_SetServerTimeout--------------
@@ -701,14 +691,14 @@ void ESP8266_EnableServer(uint16_t port){
 //---------ESP8266_DisableServer----------
 // disables tcp server
 // ***Prickett code for server, not used or tested in this client project
-// Input: none 
-// output: 1 if success, 0 if fail 
+// Input: none
+// output: 1 if success, 0 if fail
 int ESP8266_DisableServer(void){
   int try=MAXTRY;
   SearchStart("ok");
   while(try){
     sprintf((char*)TXBuffer, "AT+CIPSERVER=0,%d\r\n", ESP8266_ServerPort);
-    ESP8266SendCommand((const char*)TXBuffer); 
+    ESP8266SendCommand((const char*)TXBuffer);
     DelayMsSearching(4000);
     if(SearchFound) return 1; // success
     try--;
@@ -724,7 +714,7 @@ int ESP8266_DisableServer(void){
 void ESP8266ProcessInput(const char* buffer){
   char* ptr;
   // "+IPD" indicates data coming in from IP server
-  if (buffer[0] == '+' && buffer[1] == 'I' && buffer[2] == 'P' && buffer[3] == 'D' && buffer[8] != '\n'){     
+  if (buffer[0] == '+' && buffer[1] == 'I' && buffer[2] == 'P' && buffer[3] == 'D' && buffer[8] != '\n'){
     ptr = (char *)buffer + 7;
     while (*ptr != ':'){
       ptr++;
@@ -744,7 +734,7 @@ void ESP8266ProcessInput(const char* buffer){
   }
 }
 
-const char formBody[] = 
+const char formBody[] =
   "<!DOCTYPE html><html><body><center> \
   <h1>Enter a message to send to your microcontroller!</h1> \
   <form> \
@@ -762,7 +752,7 @@ const char formBody[] =
 /*
 ===================================================================================================
   HTTP :: HTTP_ServePage
-  
+
    - constructs and sends a web page via the ESP8266 server
 
    - NOTE: this seems to work for sending pages to Firefox (and maybe other PC-based browsers),
@@ -772,20 +762,20 @@ const char formBody[] =
 */
 void HTTP_ServePage(const char* body){
   char header[] = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: ";
-    
+
   char contentLength[16];
-  
-  
+
+
   sprintf(contentLength, "%d\r\n\r\n", strlen(body));
-    
+
   sprintf((char*)TXBuffer, "AT+CIPSEND=%d,%d\r\n", 0, strlen(body) + strlen(contentLength) + strlen(header));
   ESP8266SendCommand((const char*)TXBuffer);
-    
+
   DelayMs(100);
-    
+
   ESP8266SendCommand(header);
   ESP8266SendCommand(contentLength);
-  ESP8266SendCommand(body);    
+  ESP8266SendCommand(body);
 }
 char * returnRXBuffer(){
   return RXBuffer;
@@ -831,7 +821,7 @@ void logOwnServer(uint32_t data1,uint32_t data2, uint32_t data3){
     string_2[1]=data1_buff[1];
     }else{
      string_2[0]=data1_buff[0];
-    } 
+    }
 
   string_3[0]=data2_buff[0];
   string_3[1]=data2_buff[1];
@@ -841,7 +831,7 @@ void logOwnServer(uint32_t data1,uint32_t data2, uint32_t data3){
   string_3[4]='E';
   string_3[5]=data2_buff[2];
   //string_3[7]=data2_buff[5];
-  
+
   if(data3_buff[3]!=NULL){
   string_4[0]=data3_buff[0];
   string_4[1]=data3_buff[1];
@@ -860,18 +850,13 @@ void logOwnServer(uint32_t data1,uint32_t data2, uint32_t data3){
   else{
   string_4[0]=data3_buff[0];
   }
-  
-  sprintf(fullData,"%s%s%s%s%s%s%s",string_1,string_2,data2Header,string_3,data3Header,string_4,endOfData);  
+
+  sprintf(fullData,"%s%s%s%s%s%s%s",string_1,string_2,data2Header,string_3,data3Header,string_4,endOfData);
   if(ESP8266_MakeTCPConnection("emb445l.appspot.com")){
-    
+
   // ESP8266_SendTCP("GET /query?city=Austin%20Texas&id=Jonathan%20Valvano&data1=Int%20Temp%3D21C&data2=Int%20Temp%3D55C&edxcode=8086 HTTP/1.1\r\nUser-Agent: Keil\r\nHost: emb445l.appspot.com\r\n\r\n");
   ESP8266_SendTCP(fullData);
   }
   ESP8266_CloseTCPConnection();
-  
+
 }
-
-
-
-
- 

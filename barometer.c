@@ -1,24 +1,16 @@
-// 1) barometer.h
-// 2) Corentin Dugue & Wei Tat Lee
-// 3) 10/24/2016
-// 4) Provide Initialization Function of the barometer BMP280
-// 5) Lab 8
-// 6) MAHESH SRINIVASAN
-// 7) 10/24/2016
-// 8) Hardware connections
-//     Barometer
-// #1  Power: 3.3V DC
-//     Ground: GND
-//   SSI1Clk (SCK) connected to PD0
-//   SSI1Fss (!CS) connected to PD1 (GPIO controlled)
-//   SSI1Rx  (SDO) connected to PD2
-//   SSI1Tx  (SDI) connected to PD3
+// Name: barometer.c
+// Authors: Corentin Dugue & Wei Tat Lee
+// Creation: 10/24/2016
+// Description: Provide initialization functions of the barometer BMP280
+// Last modified: 10/24/2016
+
+/*************************START*************************/
 
 #include <stdint.h>
 #include "inc/tm4c123gh6pm.h"
 #include "barometer.h"
 uint8_t Rx,chipID,Tx;
-bmp280_calib_data _bmp280_calib; 
+bmp280_calib_data _bmp280_calib;
 uint8_t DEBUG2;
 //********BARO_Init*****************
 // Initialize BMP280 Barometer
@@ -28,22 +20,22 @@ void Baro_Init(void) {
   SYSCTL_RCGCSSI_R |= 0x02; // activate SSI1
   SYSCTL_RCGCGPIO_R |= 0x08; // activate port D
   while((SYSCTL_PRGPIO_R&0x08) == 0){};// ready?
-  
-  GPIO_PORTD_PCTL_R = (GPIO_PORTD_PCTL_R&0xFFFF0000)+0x00002202;     
+
+  GPIO_PORTD_PCTL_R = (GPIO_PORTD_PCTL_R&0xFFFF0000)+0x00002202;
   GPIO_PORTD_AMSEL_R = 0;         // disable analog functionality on PD
   GPIO_PORTD_AFSEL_R |= 0x0D;    // enable alt funct on PD0,2,3
   GPIO_PORTD_DIR_R |= 0x02;       // make PD1 (FSS/!CS) output
   GPIO_PORTD_DEN_R |= 0x0F;       // configure PD0,1,2,3 as SSI (Digital I/O)
-  
+
   SSI1_CR1_R = 0x00000000;        // disable SSI, master mode
   SSI1_CPSR_R = 0x08;             // 10 MHz SSIClk (80Mhz Bus/8)
-  SSI1_CR0_R = (SSI1_CR0_R&~0x0000FFFF)+ 0x00000007; // SPH = 1, SPO = 1, FRF=Freescale(0), DSS=8Bit  
+  SSI1_CR0_R = (SSI1_CR0_R&~0x0000FFFF)+ 0x00000007; // SPH = 1, SPO = 1, FRF=Freescale(0), DSS=8Bit
   SSI1_CR1_R |= 0x00000002;       // enable SSI
-  PD1=0x02;                       // !CS/FSS = 1;  
+  PD1=0x02;                       // !CS/FSS = 1;
 }
 
 //********sendAndRead*****************
-// Send 8-bit control byte to the SSI and return 8-bit Data 
+// Send 8-bit control byte to the SSI and return 8-bit Data
 // inputs:  1bit (R/W : 1/0) 7bit (Register Address)
 // outputs: 8bit data received from BMP280
 uint8_t sendAndRead(uint8_t code){
@@ -147,17 +139,17 @@ int32_t calib2;
 int32_t calib3;
 //resolution of 0.01
 int32_t ReadTemperature(void){
-  
+
   DEBUG2=2;
   int32_t var1, var2,T;
-  
+
   int32_t adc_T = read24(BMP280_REGISTER_TEMPDATA);
   temp_raw=adc_T;
   adc_T>>=4;
   calib1=(int32_t)_bmp280_calib.dig_T1;
   calib2=(int32_t)_bmp280_calib.dig_T2;
   calib3=(int32_t)_bmp280_calib.dig_T3;
-  
+
   var1  = ((((adc_T>>3) - (((int32_t)_bmp280_calib.dig_T1 )<<1))) *
 	   ((int32_t)_bmp280_calib.dig_T2)) >> 11;
 
@@ -166,14 +158,14 @@ int32_t ReadTemperature(void){
 	   ((int32_t)_bmp280_calib.dig_T3)) >> 14;
   temp_var1=var1;
   temp_var2=var2;
-  t_fine = var1 + var2;              
+  t_fine = var1 + var2;
   T = (t_fine * 5 + 128) >> 8;
   //return T/100;
   return T;
 }
 
 //resolution (1/256)
-int64_t ReadPressure(void){ 
+int64_t ReadPressure(void){
   int64_t var1, var2, p;
 
   // Must be done first to get the t_fine variable set up
@@ -204,5 +196,3 @@ int64_t ReadPressure(void){
 }
 
 //Read Altitude?
-
-

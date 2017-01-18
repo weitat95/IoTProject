@@ -1,15 +1,15 @@
-// 1) LightSensor.h
-// 2) Corentin Dugue & Wei Tat Lee
-// 3) 10/24/2016
-// 4) Provide functions to interface the light sensor
-// 5) Lab 8
-// 6) MAHESH SRINIVASAN
-// 7) 10/24/2016
-// 8) Hardware connections
+// Name: LightSensor.h
+// Authors: Corentin Dugue & Wei Tat Lee
+// Creation: 10/24/2016
+// Description: Provide functions to interface the light sensor
+// Last modified: 10/24/2016
+// Hardware connections:
 //     Light sensor
 // #1  Power: 3.3V DC
 //     Data out: PE4 (ADC)
 //     Ground: GND
+
+/*************************START*************************/
 
 #include <stdint.h>
 #include <stdint.h>
@@ -36,4 +36,3 @@ void ADC0_InitSWTriggerSeq3_Ch9(void);
 uint32_t ADC0_InSeq3(void);
 
 uint32_t GetBrightness(uint32_t light);
-

@@ -1,9 +1,10 @@
-// GasSensor.h
-// Runs on TM4C123
-// Provide functions that interact with the gas sensor
-// Corentin Dugue Wei Tat Lee
-// October 24, 2016
+// Name: GasSensor.c
+// Authors: Corentin Dugue & Wei Tat Lee
+// Creation: 10/24/2016
+// Description: Provide functions that interact with the gas sensor
+// Last modified: 10/24/2016
 
+/*************************START*************************/
 
 #include <stdint.h>
 #include <stdio.h>

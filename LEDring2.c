@@ -72,6 +72,50 @@ void Blinking_Color1_Color2(unsigned char RColor1, unsigned char GColor1, unsign
   SysTick_Wait10ms(50);
 }
 
+uint8_t BLUE_COLOR[24][3];
+BLUE_COLOR[0][0]=; BLUE_COLOR[0][1]=; BLUE_COLOR[0][2]=;
+BLUE_COLOR[1][0]=; BLUE_COLOR[1][1]=; BLUE_COLOR[1][2]=;
+BLUE_COLOR[2][0]=; BLUE_COLOR[2][1]=; BLUE_COLOR[2][2]=;
+BLUE_COLOR[3][0]=; BLUE_COLOR[3][1]=; BLUE_COLOR[3][2]=;
+BLUE_COLOR[4][0]=; BLUE_COLOR[4][1]=; BLUE_COLOR[4][2]=;
+BLUE_COLOR[5][0]=; BLUE_COLOR[5][1]=; BLUE_COLOR[5][2]=;
+BLUE_COLOR[6][0]=; BLUE_COLOR[6][1]=; BLUE_COLOR[6][2]=;
+BLUE_COLOR[7][0]=; BLUE_COLOR[7][1]=; BLUE_COLOR[7][2]=;
+BLUE_COLOR[8][0]=; BLUE_COLOR[8][1]=; BLUE_COLOR[8][2]=;
+BLUE_COLOR[9][0]=; BLUE_COLOR[9][1]=; BLUE_COLOR[9][2]=;
+BLUE_COLOR[10][0]=; BLUE_COLOR[10][1]=; BLUE_COLOR[10][2]=;
+BLUE_COLOR[11][0]=; BLUE_COLOR[11][1]=; BLUE_COLOR[11][2]=;
+BLUE_COLOR[12][0]=; BLUE_COLOR[12][1]=; BLUE_COLOR[12][2]=;
+BLUE_COLOR[13][0]=; BLUE_COLOR[13][1]=; BLUE_COLOR[13][2]=;
+BLUE_COLOR[14][0]=; BLUE_COLOR[14][1]=; BLUE_COLOR[14][2]=;
+BLUE_COLOR[15][0]=; BLUE_COLOR[15][1]=; BLUE_COLOR[15][2]=;
+BLUE_COLOR[16][0]=; BLUE_COLOR[16][1]=; BLUE_COLOR[16][2]=;
+BLUE_COLOR[17][0]=; BLUE_COLOR[17][1]=; BLUE_COLOR[17][2]=;
+BLUE_COLOR[18][0]=; BLUE_COLOR[18][1]=; BLUE_COLOR[18][2]=;
+BLUE_COLOR[19][0]=; BLUE_COLOR[19][1]=; BLUE_COLOR[19][2]=;
+BLUE_COLOR[20][0]=; BLUE_COLOR[20][1]=; BLUE_COLOR[20][2]=;
+BLUE_COLOR[21][0]=; BLUE_COLOR[21][1]=; BLUE_COLOR[21][2]=;
+BLUE_COLOR[22][0]=; BLUE_COLOR[22][1]=; BLUE_COLOR[22][2]=;
+BLUE_COLOR[23][0]=; BLUE_COLOR[23][1]=; BLUE_COLOR[23][2]=;
+
+void Slick(uint32_t brightness) {
+  for (i=0; i<NLEDS; i++) {
+      sendPixel(BLUE_COLOR[i][0]/brightness, BLUE_COLOR[i][1]/brightness, BLUE_COLOR[i][2]/brightness); }
+   if (i==NLEDS-1) {SysTick_Wait(50000);}
+}
+
+void SlickLoading(uint32_t brightness) {
+  for (i=0; i<NLEDS; i++) {
+    for (j=0; j<NLEDS; j++) {
+      if (j<=i) {sendPixel(BLUE_COLOR[j][0]/brightness, BLUE_COLOR[j][1]/brightness, BLUE_COLOR[j][2]/brightness);}
+      //else if (j==i) {sendPixel(BLUE_COLOR[i][0]/brightness, BLUE_COLOR[i][1]/brightness, BLUE_COLOR[i][2]/brightness);}
+      else {sendPixel(0, 0, 0);}
+    }
+    SysTick_Wait10ms(delay);
+  }
+  if (i==NLEDS-1) {SysTick_Wait(50000);}
+}
+
 /*
 void Blinking_Color1_Color2(unsigned char RColor1, unsigned char GColor1, unsigned char BColor1, unsigned char RColor2, unsigned char GColor2, unsigned char BColor2, uint32_t brightness) {
   Color1_Color2(RColor1, GColor1, BColor1, RColor2, GColor2, BColor2, brightness);
@@ -160,7 +204,7 @@ void sendByte( unsigned char byte ) {
 //------------sendPixel------------
 // Send a single pixel to the string
 void sendPixel( unsigned char r, unsigned char g , unsigned char b ) {
-  
+
   sendByte(g); // Neopixel wants colors in green-then-red-then-blue order
   sendByte(r);
   sendByte(b);

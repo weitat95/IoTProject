@@ -1,11 +1,9 @@
-// 1) barometer.h
-// 2) Corentin Dugue & Wei Tat Lee
-// 3) 10/24/2016
-// 4) Provide Initialization Function of the barometer BMP280
-// 5) Lab 8
-// 6) MAHESH SRINIVASAN
-// 7) 10/24/2016
-// 8) Hardware connections
+// Name: barometer.h
+// Authors: Corentin Dugue & Wei Tat Lee
+// Creation: 10/24/2016
+// Description: Provide initialization functions of the barometer BMP280
+// Last modified: 10/24/2016
+// Hardware connections:
 //     Barometer
 // #1  Power: 3.3V DC
 //     Ground: GND
@@ -13,6 +11,8 @@
 //   SSI1Fss (!CS) connected to PD1 (GPIO controlled)
 //   SSI1Rx  (SDO) connected to PD2
 //   SSI1Tx  (SDI) connected to PD3
+
+/*************************START*************************/
 
 #include <stdint.h>
 
@@ -71,9 +71,9 @@
       int8_t   dig_H6;
     } bmp280_calib_data;
 /*=========================================================================*/
-    
+
 //********sendAndRead*****************
-// Send 8-bit control byte to the SSI and return 8-bit Data 
+// Send 8-bit control byte to the SSI and return 8-bit Data
 // inputs:  1bit (R/W : 1/0) 7bit (Register Address)
 // outputs: 8bit data received from BMP280
 uint8_t sendAndRead(uint8_t code);
@@ -86,7 +86,7 @@ uint32_t read24(uint8_t reg);
 uint16_t read16_LE(uint8_t reg);
 int16_t readS16_LE(uint8_t reg);
 void write8(uint8_t reg,uint8_t value);
-//**********************************************    
+//**********************************************
 
 //********readCalibrationPara*******************
 // Reading the calibration data from the BMP280 chip

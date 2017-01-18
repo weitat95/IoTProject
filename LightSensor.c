@@ -1,15 +1,10 @@
-// 1) LightSensor.c
-// 2) Corentin Dugue & Wei Tat Lee
-// 3) 10/24/2016
-// 4) Provide functions to interface the light sensor
-// 5) Lab 8
-// 6) MAHESH SRINIVASAN
-// 7) 10/24/2016
-// 8) Hardware connections
-//     Light sensor
-// #1  Power: 3.3V DC
-//     Data out: PE4 (ADC)
-//     Ground: GND
+// Name: LightSensor.c
+// Authors: Corentin Dugue & Wei Tat Lee
+// Creation: 10/24/2016
+// Description: Provide functions to interface the light sensor
+// Last modified: 10/24/2016
+
+/*************************START*************************/
 
 #include <stdint.h>
 #include "../inc/tm4c123gh6pm.h"
